@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="./assets/jquery/jquery-3.0.0.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/css/custom.css">
+    <script>
+        $(document).ready(function () {
+
+            $("#btnStart").click(function () {
+                let textA = $('#textareaA').val();
+                let textB = $('#textareaB').val();
+                if (textA.length > 0 && textB.length > 0) {
+                    deleteResult();
+                    let tmpArrayA = formatArray(textA.split("\n"));
+                    let tmpArrayB = formatArray(textB.split("\n"));
+                    $("<p>Folgende Elemente sind nicht in Textfeld A enthalten:</p>").appendTo("#result");
+                    let resultSubsetA = searchForSubset(tmpArrayA, tmpArrayB);
+                    showResult(resultSubsetA);
+                    $("<p>Folgende Elemente sind nicht in Textfeld B enthalten:</p>").appendTo("#result");
+                    let resultSubsetB = searchForSubset(tmpArrayB, tmpArrayA);
+                    showResult(resultSubsetB);
+                    $("<br></br>").appendTo("#result");
+                }
+
+            });
+
+            $("#btnDelete").click(function () {
+                deleteAll();
+                deleteResult();
+            });
+
+        });
+
+        let deleteAll = () => {
+            $('#textareaA').val("");
+            $('#textareaB').val("");
+        };
+
+
+        let formatArray = (array) => {
+            const tmp = [];
+            array.forEach((element) => {
+                let noWhiteSpace = element.replace(/ /g, '')
+                if (noWhiteSpace !== "") {
+                    tmp.push(noWhiteSpace);
+                }
+            });
+
+            let uniqueSet = new Set(tmp);
+            let result = [...uniqueSet]
+
+            return result;
+        };
+
+        let searchForSubset = (arrayA, arrayB) => {
+            subset = arrayB.filter(value => {
+                return !arrayA.includes(value);
+            });
+            return subset;
+        }
+
+        let showResult = (resultArray) => {
+            let content = arrayToString(resultArray);
+            $(content).appendTo("#result");
+        }
+
+        let arrayToString = (array) => {
+            let arrayString = '<ul class="list-group showTable">';
+            array.forEach((element) => {
+                arrayString += '<li class="list-group-item">' + element + '</li>';
+            });
+            arrayString += '</ul>'
+            return arrayString;
+        };
+
+        let deleteResult = () => {
+            $("#result").empty();
+        }
+
+    </script>
+
+    <title>SG-APP</title>
+
+</head>
+
+<body>
+
+    <h1 class="titleStyle">Check Textdatei</h1>
+    <p class="beschreibungStyle">Ermittelt die Teilmenge der angeben Textdatein. Hierbei bildet jeder Absatz einen
+        Datensatz.</p>
+
+    <div class="textInput">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Textfeld A</span>
+            </div>
+            <textarea id="textareaA" class="form-control textArea" aria-label="With textarea"></textarea>
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Textfeld B</span>
+            </div>
+            <textarea id="textareaB" class="form-control textArea" aria-label="With textarea"></textarea>
+        </div>
+    </div>
+    <br>
+    <div class="buttonStartDelete">
+        <button id="btnStart" type="button" class="btn btn-info">Start</button>
+        <button id="btnDelete" type="button" class="btn btn-info">Löschen</button>
+    </div>
+
+    <div id="result">
+    </div>
+
+
+</body>
+
+</html>
